@@ -9,13 +9,15 @@ Caitlin Connerney
 
 import random
 
+int numberOfProcesses = 12
+
 # Process Class
 class process:
 	pid 			= 0		# Process ID
-	burst 		= 0		# Time it takes to complete
+	burst 			= 0		# Time it takes to complete
 	turn 			= 0		# Total Time taken to complete
 	wait 			= 0		# Time spent in Queue
-	priority 	= 0		# Priority Level
+	priority 		= 0		# Priority Level
 
 
 #	Shortest Job First without Preemption algorithm
