@@ -35,9 +35,29 @@ class process:
 		else:
 			False
 
-def printProcess(time, p, pType):
-	print "[time ",time,"ms] ",pType," with process ID ",p.pid," has terminated (turnaround time ", p.turn, "ms wait time ", p.wait,"ms)"
-	pass
+# Print Function to handle all the if statements when printing
+# Case 1: Process entry 
+# Case 2: Context switch
+# Case 3: Process CPU burst completion
+# Case 4: Process termination
+# Case 5: Aging event
+def printProcess(time,case,p):
+	if case == 1:
+		if p.inter:
+			print "[time",time,"ms] Interactive process ID",p.pid,"entered ready queue (requires",p.time,"ms CPU time)"
+		else:
+			print "[time",time,"ms] CPU-bound process ID",p.pid,"entered ready queue (requires",p.time,"ms CPU time)"
+	elif case == 2:
+		print "To be implimented"
+	elif case == 3:
+		print "To be implimented"
+	elif case == 4:
+		if p.inter:
+			print "[time",time,"ms] Interactive process ID",p.pid,"has terminated (turnaround time", p.turn, "ms wait time", p.wait,"ms)"
+		else:
+			print "[time",time,"ms] CPU-bound process ID",p.pid,"has terminated (turnaround time", p.turn, "ms wait time", p.wait,"ms)"
+	else:
+		print "To be implimented"
 
 #	Shortest Job First without Preemption algorithm
 # Takes in a list of processes and puts them into a que to run
@@ -49,12 +69,7 @@ def SJFN( processes ):
 	# Sort the list by the completion time
 	queue.sort(key=operator.attrgetter('time'))
 	for p in queue:
-		pType = ""
-		if p.inter:
-			pType = "Interactive"
-		else:
-			pType = "CPU-bound"
-		printProcess(0, p, pType)
+		masterPrint(0,1,p)
 	# Simulate processing
 	time = 0
 	while len(queue) != 0:
@@ -62,7 +77,7 @@ def SJFN( processes ):
 		p.wait = time
 		time += p.time
 		p.turn = time
-		printProcess(time, p, "Process")
+		masterPrint(time,4,p)
 
 '''
 #	Shortest Job First with Preemption algorithm
@@ -76,18 +91,18 @@ def RR( processes):
 	# Put all processes in Queue
 	queue = []
 	for process in processes:
-		queue.append(p)
+		queue.append(process)
 		pType = ""
 		if process.inter:
 			pType = "Interactive"
 		else:
 			pType = "CPU-bound"
-		printProcess(0, process, pType)
+		printProcess(0, 1, process)
 
 	tLimit = 100 											#This is the time in miliseonds spent on each portion of the RR
 	totalTime = 0											#This is the total time spent on the operation
-	while len(processes) > 0:								#While there are active processes run
-		for process in processes:							#Each Round Robin loop
+	while len(queue) > 0:								#While there are active processes run
+		for process in queue:							#Each Round Robin loop
 			timeDifference = process.time-process.turn
 			if timeDifference > tLimit:
 				process.turn +=tLimit
@@ -96,7 +111,7 @@ def RR( processes):
 				process.turn = process.time
 				totalTime += timeDifference;
 				queue.remove(process)
-				printProcess(totalTime, process, "Process")
+				printProcess(totalTime, 4, process)
 
 
 #	Preemptive Priority alorithm
@@ -122,7 +137,7 @@ def main():
 	two 	= process(2,3000,8,False)
 	three = process(3,350,8,False)
 	processes = [one,two,three]
-	SJFN(processes)
+	RR(processes)
 
 if __name__ == '__main__': 
 	main()
