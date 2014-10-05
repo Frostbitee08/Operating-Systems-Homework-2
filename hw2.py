@@ -51,11 +51,12 @@ def SJFN( processes ):
 			print "[time 0ms] CPU-bound process ID ", p.pid, " entered ready queue (requires ", p.time, "ms CPU time)"
 	# Simulate processing
 	time = 0
-	while queue.length != 0:
-		# Run the process on top of the queue
-		print "Process "
-
-	
+	while len(queue) != 0:
+		p = queue.pop(0)
+		p.wait = time
+		time += p.time
+		p.turn = time
+		print "[time ",time,"ms] Process with process ID ",p.pid," has terminated (turnaround time ", p.turn, "ms wait time ", p.wait,"ms)"
 
 '''
 #	Shortest Job First with Preemption algorithm
