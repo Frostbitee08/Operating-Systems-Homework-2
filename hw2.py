@@ -34,7 +34,10 @@ def	SJFP( processes, time ):
 # Round Robin algorithm
 # Takes in a list of processes and puts them into a que to run
 def RR( processes, time ):
-
+	while len(processes) > 0:
+		for process in processes:
+			while :
+				pass
 
 #	Preemptive Priority alorithm
 # Takes in a list of processes and puts them into a que to run
