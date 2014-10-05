@@ -35,6 +35,29 @@ class process:
 		else:
 			False
 
+# Print Function to handle all the if statements when printing
+# Case 1: Process entry 
+# Case 2: Context switch
+# Case 3: Process CPU burst completion
+# Case 4: Process termination
+# Case 5: Aging event
+def masterPrint(time,case,p):
+	if case == 1:
+		if p.inter:
+			print "[time",time,"ms] Interactive process ID",p.pid,"entered ready queue (requires",p.time,"ms CPU time)"
+		else:
+			print "[time",time,"ms] CPU-bound process ID",p.pid,"entered ready queue (requires",p.time,"ms CPU time)"
+	elif case == 2:
+		print "To be implimented"
+	elif case == 3:
+		print "To be implimented"
+	elif case == 4:
+		if p.inter:
+			print "[time",time,"ms] Interactive process ID",p.pid,"has terminated (turnaround time", p.turn, "ms wait time", p.wait,"ms)"
+		else:
+			print "[time",time,"ms] CPU-bound process ID",p.pid,"has terminated (turnaround time", p.turn, "ms wait time", p.wait,"ms)"
+	else:
+		print "To be implimented"
 
 #	Shortest Job First without Preemption algorithm
 # Takes in a list of processes and puts them into a que to run
@@ -46,10 +69,7 @@ def SJFN( processes ):
 	# Sort the list by the completion time
 	queue.sort(key=operator.attrgetter('time'))
 	for p in queue:
-		if p.inter:
-			print "[time 0ms] Interactive process ID ", p.pid, " entered ready queue (requires ", p.time, "ms CPU time)"
-		else:
-			print "[time 0ms] CPU-bound process ID ", p.pid, " entered ready queue (requires ", p.time, "ms CPU time)"
+		masterPrint(0,1,p)
 	# Simulate processing
 	time = 0
 	while len(queue) != 0:
@@ -57,7 +77,7 @@ def SJFN( processes ):
 		p.wait = time
 		time += p.time
 		p.turn = time
-		print "[time ",time,"ms] Process with process ID ",p.pid," has terminated (turnaround time ", p.turn, "ms wait time ", p.wait,"ms)"
+		masterPrint(time,4,p)
 
 '''
 #	Shortest Job First with Preemption algorithm
@@ -95,10 +115,14 @@ def simulate( m, n ):
 '''
 
 def main():
-	one 	= process(1,100,1,True)
-	two 	= process(2,3000,8,False)
-	three = process(3,350,8,False)
-	processes = [one,two,three]
+	# Just some test stuff
+	processes = []
+	for pid in range(1,13):
+		q = random.randint(1,101)
+		if q < 21:
+			processes.append(process(pid,random.randint(200,3001),8,False))
+		else:
+			processes.append(process(pid,random.randint(20,201),1,True))
 	SJFN(processes)
 
 if __name__ == '__main__': 
