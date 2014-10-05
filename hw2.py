@@ -10,7 +10,7 @@ Caitlin Connerney
 import random
 import operator
 
-int numberOfProcesses = 12
+numberOfProcesses = 12
 
 # Process Class
 class process:
@@ -18,8 +18,8 @@ class process:
 	def __init__(self, p, t, b, i):
 		self.pid 	= p      		# Process ID
 		self.time = t 				# Time it takes to complete 20-200ms or 200-3000ms
-		self.turn = 0					# Total Time taken to complete
-		self.wait = 0					# Time spent in Queue
+		self.turn = 0				# Total Time taken to complete
+		self.wait = 0				# Time spent in Queue
 		self.priority = 0			# Priority Level
 		self.bursts = b 			# Bursts it takes to complete
 		self.inter = i 				# Interactive Process or not
@@ -35,6 +35,9 @@ class process:
 		else:
 			False
 
+def printProcess(time, p, pType):
+	print "[time ",time,"ms] ",pType," with process ID ",p.pid," has terminated (turnaround time ", p.turn, "ms wait time ", p.wait,"ms)"
+	pass
 
 #	Shortest Job First without Preemption algorithm
 # Takes in a list of processes and puts them into a que to run
@@ -46,10 +49,12 @@ def SJFN( processes ):
 	# Sort the list by the completion time
 	queue.sort(key=operator.attrgetter('time'))
 	for p in queue:
+		pType = ""
 		if p.inter:
-			print "[time 0ms] Interactive process ID ", p.pid, " entered ready queue (requires ", p.time, "ms CPU time)"
+			pType = "Interactive"
 		else:
-			print "[time 0ms] CPU-bound process ID ", p.pid, " entered ready queue (requires ", p.time, "ms CPU time)"
+			pType = "CPU-bound"
+		printProcess(0, p, pType)
 	# Simulate processing
 	time = 0
 	while len(queue) != 0:
@@ -57,7 +62,7 @@ def SJFN( processes ):
 		p.wait = time
 		time += p.time
 		p.turn = time
-		print "[time ",time,"ms] Process with process ID ",p.pid," has terminated (turnaround time ", p.turn, "ms wait time ", p.wait,"ms)"
+		printProcess(time, p, "Process")
 
 '''
 #	Shortest Job First with Preemption algorithm
@@ -68,12 +73,30 @@ def	SJFP( processes, time ):'''
 # Round Robin algorithm
 # Takes in a list of processes and puts them into a que to run
 def RR( processes):
-	time = 0
-	tLimit = 100 						#This is the time in miliseonds spent on each portion of the RR
-	while len(processes) > 0:			#While there are active processes run
-		for process in processes:		#Each Round Robin loop
-			while time < tLimit:
-				#Execute Process3
+	# Put all processes in Queue
+	queue = []
+	for process in processes:
+		queue.append(p)
+		pType = ""
+		if process.inter:
+			pType = "Interactive"
+		else:
+			pType = "CPU-bound"
+		printProcess(0, process, pType)
+
+	tLimit = 100 											#This is the time in miliseonds spent on each portion of the RR
+	totalTime = 0											#This is the total time spent on the operation
+	while len(processes) > 0:								#While there are active processes run
+		for process in processes:							#Each Round Robin loop
+			timeDifference = process.time-process.turn
+			if timeDifference > tLimit:
+				process.turn +=tLimit
+				totalTime += tLimit;
+			else:
+				process.turn = process.time
+				totalTime += timeDifference;
+				queue.remove(process)
+				printProcess(totalTime, process, "Process")
 
 
 #	Preemptive Priority alorithm
