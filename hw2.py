@@ -142,6 +142,8 @@ def main():
 		else:
 			processes.append(process(pid,random.randint(20,201),1,True))
 	SJFN(processes)
+	print "\n"
+	RR(processes)
 
 if __name__ == '__main__': 
 	main()
