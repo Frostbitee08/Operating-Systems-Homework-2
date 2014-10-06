@@ -9,8 +9,11 @@ Caitlin Connerney
 
 import random
 import operator
+import sys
 
-numberOfProcesses = 12
+m = 1 				#Number of Cores used
+n = 12				#Number of Processes ran
+timeLimit = 100		#Time limit given for Algoritms like Round Robin
 
 # Process Class
 class process:
@@ -99,14 +102,13 @@ def RR( processes):
 			pType = "CPU-bound"
 		printProcess(0, 1, process)
 
-	tLimit = 100 											#This is the time in miliseonds spent on each portion of the RR
 	totalTime = 0											#This is the total time spent on the operation
-	while len(queue) > 0:								#While there are active processes run
-		for process in queue:							#Each Round Robin loop
+	while len(queue) > 0:									#While there are active processes run
+		for process in queue:								#Each Round Robin loop
 			timeDifference = process.time-process.turn
-			if timeDifference > tLimit:
-				process.turn +=tLimit
-				totalTime += tLimit;
+			if timeDifference > timeLimit:
+				process.turn +=timeLimit
+				totalTime += timeLimit;
 			else:
 				process.turn = process.time
 				totalTime += timeDifference;
@@ -116,7 +118,24 @@ def RR( processes):
 
 #	Preemptive Priority alorithm
 # Takes in a list of processes and puts them into a que to run
-'''def PP( processes, time ):
+#NOTE Current Implmentation is not preemptive
+def PP( processes, time ):
+	# Put all processes in Queue
+	queue = []
+	for p in processes:
+		queue.append(p)
+	# Sort the list by the completion time
+	queue.sort(key=operator.attrgetter('priority'))
+	for p in queue:
+		printProcess(0,1,p)
+	# Simulate processing
+	time = 0
+	while len(queue) != 0:
+		p = queue.pop(0)
+		p.wait = time
+		time += p.time
+		p.turn = time
+		printProcess(time,4,p)
 
 
 # Function to incrememnt the times for the process in the queue
@@ -128,7 +147,7 @@ def inc( processes ):
 #	Simulate takes in 2 parameters and runs simulates all scheduling algorithms
 #		int m = number of CPUs. Should be be 1 or 4
 #		int n = number of Processes. The default value is 12
-def simulate( m, n ):
+'''def simulate( m, n ):
 
 '''
 
@@ -141,7 +160,20 @@ def main():
 			processes.append(process(pid,random.randint(200,3001),8,False))
 		else:
 			processes.append(process(pid,random.randint(20,201),1,True))
-	SJFN(processes)
+	RR(processes)
 
 if __name__ == '__main__': 
+	#First arguement is number of cores, m, Second is number of processes ran, n, third is time limit, time
+	skip = 1;
+	for arguement in sys.argv:
+		if skip == 1:
+			skip = 0
+		elif arguement[0] == 'm' and len(arguement)>2:
+			m = int(arguement[2:len(arguement)])
+		elif arguement[0] == 'n' and len(arguement)>2:
+			n = int(arguement[2:len(arguement)])
+		elif arguement[0:4] == "time" and len(arguement)>5:
+			timeLimit = int(arguement[5:len(arguement)])
+		pass
+
 	main()
