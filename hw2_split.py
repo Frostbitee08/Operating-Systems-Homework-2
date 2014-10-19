@@ -481,7 +481,7 @@ def RR(processes,m):
 		p.priority = 0
 	TIME = 0
 	CT = 2
-	TS = 100
+	TS = timeLimit
 	completedProcess = []
 	# Create 3 queues
 	inCPU = PriorityQueue([])
