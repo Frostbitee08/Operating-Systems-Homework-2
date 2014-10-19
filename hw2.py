@@ -21,8 +21,8 @@ class process:
 	def __init__(self, p, t, b, i):
 		self.pid 	= p      		# Process ID
 		self.time = t 				# Time it takes to complete 20-200ms or 200-3000ms
-		self.turn = 0				# Total Time taken to complete
-		self.wait = 0				# Time spent in Queue
+		self.turn = 0					# Total Time taken to complete
+		self.wait = 0					# Time spent in Queue or time spent waiting for input
 		self.priority = 0			# Priority Level
 		self.bursts = b 			# Bursts it takes to complete
 		self.inter = i 				# Interactive Process or not
@@ -67,20 +67,40 @@ def printProcess(time,case,p):
 def SJFN( processes ):
 	# Put all processes in Queue
 	queue = []
+	waiting = []
+	procs = 0
 	for p in processes:
 		queue.append(p)
+		if p.inter:
+			procs += 1
 	# Sort the list by the completion time
-	queue.sort(key=operator.attrgetter('time'))
 	for p in queue:
 		printProcess(0,1,p)
+	queue.sort(key=operator.attrgetter('time'))	
 	# Simulate processing
 	time = 0
-	while len(queue) != 0:
-		p = queue.pop(0)
-		p.wait = time
-		time += p.time
-		p.turn = time
-		printProcess(time,4,p)
+	current = 0
+	while len(queue)+len(waiting) > 0:
+		if(current == 0):
+			current = queue.pop(0)
+		elif(time - current.wait == current.time):
+			if(current.inter):
+				current.wait=random.randint(1000,4501)
+				waiting.append(current)
+				current=0
+			else
+				if(current.bursts > 1):
+					current.bursts-=1
+					current.wait = random.randint(1200,3201)
+				else
+					current = 0
+		if(waiting[0].wait == 0):
+			p = waiting.pop(0)
+			p.wait = time
+			queue.append(p)
+
+		
+		time += 1
 
 '''
 #	Shortest Job First with Preemption algorithm
@@ -160,7 +180,7 @@ def main():
 			processes.append(process(pid,random.randint(200,3001),8,False))
 		else:
 			processes.append(process(pid,random.randint(20,201),1,True))
-	RR(processes)
+	SJFN(processes)
 
 if __name__ == '__main__': 
 	#First arguement is number of cores, m, Second is number of processes ran, n, third is time limit, time
