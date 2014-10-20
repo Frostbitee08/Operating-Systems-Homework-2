@@ -233,7 +233,7 @@ class PriorityQueue(object):
 
 #####################################################################################
 
-def analysis(completedProcess,time):
+def analysis(completedProcess,time,utilization,m):
 	""" Analyzes the performance of the algorithm given the completion time and the list of processes
 	"""
 	turnarounds = [] #List of all Turnaround Times
@@ -253,10 +253,10 @@ def analysis(completedProcess,time):
 	avgw = sum(waits)/len(waits)
 	print("Turnaround time: min %d ms; avg %d ms; max %d ms" % (mint,avgt,maxt))
 	print("Total wait time: min %d ms; avg %d ms; max %d ms" % (minw,avgw,maxw))
-	temp = float(sum(CPUtimes))/float(sum(CPUtimes)+sum(waits))*100
+	temp = float(time*m - utilization)/float(time*m) * 100
 	print("Average CPU utilization: %.2f%%" %  temp) 
 	for p in completedProcess:
-		temp = float(p.totalCPU())/float(p.totalCPU()+sum(p.totalWaits))*100
+		temp = float(p.totalCPU())/float(sum(p.totalTurns))*100
 		print("Process ID %d: %.2f%%" % (p.pid,temp))
 
 #####################################################################################
@@ -289,6 +289,7 @@ def SJFN(processes, m ):
 			Ready Queue is sorted by burst time of all ready processes.
 			Takes in a list of processes and m CPUs
 	"""
+	utilization = 0
 	for p in processes:
 		p.priority = 0
 	TIME = 0
@@ -362,13 +363,15 @@ def SJFN(processes, m ):
 			assert(p.wait == 0)
 			assert(p.timeSlice == 0)
 		TIME += 1
+		if len(inCPU) != m:
+			utilization += (m-len(inCPU))
 	for i in range(0,len(blocked)):
 		completedProcess.append(blocked.pop())
 	for i in range(0,len(ready)):
 		completedProcess.append(ready.pop())
 	for i in range(0,len(inCPU)):
 		completedProcess.append(inCPU.pop())
-	analysis(completedProcess,TIME)
+	analysis(completedProcess,TIME,utilization,m)
 
 #####################################################################################
 
@@ -378,6 +381,7 @@ def SJFP(processes,m):
 			If a job enters the ready queue and is smaller the remaining time
 				on the current job there is a context switch
 	"""
+	utilization = 0
 	for p in processes:
 		p.priority = 0
 	TIME = 0
@@ -459,13 +463,15 @@ def SJFP(processes,m):
 		for p in blocked:
 			p.block-=1
 		TIME += 1
+		if len(inCPU) != m:
+			utilization += (m-len(inCPU))
 	for i in range(0,len(blocked)):
 		completedProcess.append(blocked.pop())
 	for i in range(0,len(ready)):
 		completedProcess.append(ready.pop())
 	for i in range(0,len(inCPU)):
 		completedProcess.append(inCPU.pop())
-	analysis(completedProcess,TIME)
+	analysis(completedProcess,TIME,utilization,m)
 
 #####################################################################################
 
@@ -475,6 +481,7 @@ def RR(processes,m):
 			After that time slice, Preemption occurs
 			There is no context switch for a smaller process entering the ready queue
 	"""
+	utilization = 0
 	# Tracker allows us to rotate through the queue overiding the the priority on completion time
 	tracker=0
 	for p in processes:
@@ -564,13 +571,15 @@ def RR(processes,m):
 		for p in blocked:
 			p.block-=1
 		TIME += 1
+		if len(inCPU) != m:
+			utilization += (m-len(inCPU))
 	for i in range(0,len(blocked)):
 		completedProcess.append(blocked.pop())
 	for i in range(0,len(ready)):
 		completedProcess.append(ready.pop())
 	for i in range(0,len(inCPU)):
 		completedProcess.append(inCPU.pop())
-	analysis(completedProcess,TIME)
+	analysis(completedProcess,TIME,utilization,m)
 
 #####################################################################################
 
@@ -580,6 +589,7 @@ def PP(processes,m):
 			they are completed and the queue is sorted by priority level. A process that has
 			been waiting for more than 1200ms, its priority increases
 	"""
+	utilization = 0
 	TIME = 0
 	CT = 2
 	completedProcess = []
@@ -672,13 +682,15 @@ def PP(processes,m):
 		for p in blocked:
 			p.block-=1
 		TIME += 1
+		if len(inCPU) != m:
+			utilization += (m-len(inCPU))
 	for i in range(0,len(blocked)):
 		completedProcess.append(blocked.pop())
 	for i in range(0,len(ready)):
 		completedProcess.append(ready.pop())
 	for i in range(0,len(inCPU)):
 		completedProcess.append(inCPU.pop())
-	analysis(completedProcess,TIME)
+	analysis(completedProcess,TIME,utilization,m)
 
 #####################################################################################
 
